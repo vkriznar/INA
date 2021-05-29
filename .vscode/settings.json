@@ -1,0 +1,9 @@
+{
+    "python.pythonPath": ".venv\\Scripts\\python.exe",
+    "python.analysis.typeCheckingMode": "basic",
+    "python.linting.pylintEnabled": false,
+    "python.linting.enabled": true,
+    "python.linting.pycodestyleArgs": [],
+    "files.eol": "\n",
+    "python.linting.pylamaEnabled": true
+}
