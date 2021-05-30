@@ -1,3 +1,4 @@
+from schemas.schemas import Gene, GeneInteraction
 import sqlite3
 
 
@@ -8,13 +9,17 @@ class DbHandler:
         self.con = sqlite3.connect(database)
         self.cur = self.con.cursor()
 
+    def get(self, gene_id):
+        self.cur.execute("SELECT * FROM gene WHERE id=:gene_id", {"gene_id": gene_id})
+        return self._map_gene(self.cur.fetchone())
+
     def get_all_genes(self):
         self.cur.execute("SELECT * FROM gene")
-        return self.cur.fetchall()
+        return list(map(lambda g: self._map_gene(g), self.cur.fetchall()))
 
     def get_by_symbol(self, gene_symbol):
         self.cur.execute("SELECT * FROM gene WHERE symbol=:symbol", {"symbol": gene_symbol})
-        return self.cur.fetchone()
+        return self._map_gene(self.cur.fetchone())
 
     def create_gene(self, symbol, description):
         self.cur.execute("INSERT INTO gene values (?, ?, ?)", (None, symbol, description))
@@ -34,3 +39,20 @@ class DbHandler:
         self.cur.execute("INSERT INTO gene_interaction values (?, ?, ?)", (None, gene1_id, gene2_id))
         self.con.commit()
         return self.cur.lastrowid
+
+    def get_all_interactions(self):
+        self.cur.execute("SELECT * FROM gene_interaction")
+        return list(map(lambda i: self._map_interaction(i), self.cur.fetchall()))
+
+    def get_all_interactions_by_gene(self, gene_id: int):
+        query = "SELECT * FROM gene_interaction WHERE first_gene_id=:gene_id OR gene_interaction WHERE second_gene_id=:gene_id"
+        return list(map(lambda i: self._map_interaction(i), self.cur.execute(query, {"gene_id": gene_id})))
+
+    def _map_gene(self, gene):
+        return None if gene is None else Gene(gene[0], gene[1], gene[2])
+
+    def _map_interaction(self, interaction):
+        gene1 = self.get(interaction[1])
+        gene2 = self.get(interaction[2])
+
+        return GeneInteraction(interaction[0], gene1, gene2)

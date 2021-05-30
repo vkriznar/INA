@@ -17,9 +17,9 @@ def insert_ppi_to_db(db_handler: DbHandler):
     print("Started mapping protein-protein interaction network to db")
     data = db_handler.get_all_genes()
     for i, gene in enumerate(data):
-        print(f"Mapping protein interaction for gene {gene[1]} [{i}/{len(data)}]")
+        print(f"Mapping protein interaction for gene {gene.symbol} [{i}/{len(data)}]")
         sleep(1)
-        response = requests.get(f"https://string-db.org/api/json/network?identifiers={gene[1]}")
+        response = requests.get(f"https://string-db.org/api/json/network?identifiers={gene.symbol}")
         response_data = json.loads(response.content.decode("utf-8"))
         if response.status_code != 200:
             continue
@@ -41,4 +41,4 @@ def _get_gene_id_or_create(db_handler: DbHandler, gene_symbol: str):
     if gene_db_a is None:
         print(f"Adding gene {gene_symbol} into database")
         return db_handler.create_gene(gene_symbol, "Added from interaction")
-    return gene_db_a[0]
+    return gene_db_a.id
