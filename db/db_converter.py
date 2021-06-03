@@ -1,4 +1,3 @@
-import os
 import networkx as nx
 from db.db_handler import DbHandler
 
@@ -20,4 +19,4 @@ class DbConverter:
         for interaction in interactions:
             graph.add_edge(interaction.gene1.symbol, interaction.gene2.symbol)
 
-        nx.write_pajek(graph, f"analysis/data/{self.filename}.net")
+        nx.write_pajek(graph, f"analysis/data/{self.filename}/{self.filename}.net")
