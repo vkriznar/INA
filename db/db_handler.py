@@ -1,5 +1,5 @@
 from typing import Union
-from schemas.schemas import Drug, Gene, GeneInteraction
+from schemas.schemas import Drug, Gene, GeneDrugInteraction, GeneInteraction
 import sqlite3
 
 
@@ -57,14 +57,26 @@ class DbHandler:
         query = "SELECT * FROM gene_interaction WHERE first_gene_id=:gene_id OR gene_interaction WHERE second_gene_id=:gene_id"
         return list(map(lambda i: self._map_interaction(i), self.cur.execute(query, {"gene_id": gene_id})))
 
+    def get_drug(self, drug_id):
+        self.cur.execute("SELECT * FROM drug WHERE id=:drug_id", {"drug_id": drug_id})
+        return self._map_drug(self.cur.fetchone())
+
     def get_drug_by_symbol(self, symbol: str):
         self.cur.execute("SELECT * FROM drug WHERE symbol=:symbol", {"symbol": symbol})
         return self._map_drug(self.cur.fetchone())
+
+    def get_all_drugs(self):
+        self.cur.execute("SELECT * FROM drug")
+        return list(map(lambda d: self._map_drug(d), self.cur.fetchall()))
 
     def create_drug(self, symbol: str):
         self.cur.execute("INSERT INTO drug VALUES (?, ?)", (None, symbol))
         self.con.commit()
         return self.cur.lastrowid
+
+    def get_all_gd_interactions(self):
+        self.cur.execute("SELECT * FROM drug_gene_interaction")
+        return list(map(lambda i: self._map_gd_interaction(i), self.cur.fetchall()))
 
     def create_gd_interaction(self, gene_id: int, drug_id: int):
         self.cur.execute("INSERT INTO drug_gene_interaction VALUES (?, ?, ?)", (None, gene_id, drug_id))
@@ -75,6 +87,11 @@ class DbHandler:
         query = "SELECT 1 FROM drug_gene_interaction WHERE (gene_id=:gene_id AND drug_id=:drug_id)"
         self.cur.execute(query, {"gene_id": gene_id, "drug_id": drug_id})
         return self.cur.fetchone() is not None
+
+    def get_drug_degrees(self):
+        query = "SELECT drug_id, count(*) FROM drug_gene_interaction GROUP BY drug_id"
+        self.cur.execute(query)
+        return list(map(lambda i: self._map_drug_degree(i), self.cur.fetchall()))
 
     def _map_gene(self, gene):
         return None if gene is None else Gene(gene[0], gene[1], gene[2], gene[3])
@@ -90,3 +107,16 @@ class DbHandler:
             raise Exception
 
         return GeneInteraction(interaction[0], gene1, gene2)
+
+    def _map_gd_interaction(self, interaction):
+        gene = self.get(interaction[1])
+        drug = self.get_drug(interaction[2])
+
+        if gene is None or drug is None:
+            raise Exception
+
+        return GeneDrugInteraction(interaction[0], gene, drug)
+
+    def _map_drug_degree(self, degree_pair):
+        drug = self.get_drug(degree_pair[0])
+        return (drug.symbol, degree_pair[1])
