@@ -10,7 +10,7 @@ Authors: Kalpana Raja and John Steill
 Affiliation: Morgridge Institute for Research, Madison, WI, USA.   
 
 # Instructions
-start docker containers with Elastic DB and PostGres DB if base is already made or run docker compose
+start docker containers with Elastic DB and PostGres DB if base is already made or run docker compose for km_indexer.
 
 ## Project commands
 python production_SKiM.py data/rheumatoidArthritis_genes.txt data/B_terms_file_rheumatoid_arthritis.txt data/rheumatoidArthritis_drugs_TTDandDgidb.txt rhArthritis_2005/ 25 -o -p 1e-1 -y 2005
