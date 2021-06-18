@@ -7,11 +7,16 @@ import networkx as nx
 
 if __name__ == "__main__":
     db_handler = DbHandler("db/pancreatic-cancer.db")
-    #insert_db_data(db_handler)
-    #insert_ppi_to_db(db_handler)
-    db_converter = DbConverter("db/pancreatic-cancer.db")
+    drug_degree_pairs = db_handler.get_drug_degrees()
+    print(sorted(drug_degree_pairs, key=lambda x: x[1], reverse=True)[:10])
+
+    # db_handler = DbHandler("db/atherosclerosis.db")
+    # insert_db_data(db_handler, "atherosclerosis")
+    # insert_ppi_to_db(db_handler)
+    # db_converter = DbConverter("db/atherosclerosis.db")
     # db_converter.convert_to_pajek()
-    # analyzer = NetworkAnalyzer(db_handler, "pancreatic-cancer")
+    # db_converter.convert_to_gml()
+    # analyzer = NetworkAnalyzer(db_handler, "atherosclerosis")
     # analyzer.save_subgraphs()
     # map_genes_to_drugs(db_handler)
-    db_converter.convert_bipartite_to_gml()
+    # db_converter.convert_bipartite_to_gml()

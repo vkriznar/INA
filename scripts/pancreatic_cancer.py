@@ -1,13 +1,12 @@
 import json
-from schemas.schemas import Drug, Gene
 import requests
 from time import sleep
 from db.db_handler import DbHandler
 
 
-def insert_db_data(db_handler: DbHandler):
-    print("Started inserting pancreatic cancer genes into database")
-    with open("scripts/data/cancer_category_rna_prostate.json") as f:
+def insert_db_data(db_handler: DbHandler, disease: str):
+    print(f"Started inserting {disease} genes into database")
+    with open(f"scripts/data/{disease}.json") as f:
         data = json.load(f)
         for gene_obj in data:
             db_handler.create_gene(gene_obj["Gene"], gene_obj["Gene description"])

@@ -47,7 +47,7 @@ def init_db(con: Connection, cur: Cursor):
 
 
 if __name__ == "__main__":
-    con = sqlite3.connect("db/pancreatic-cancer.db")
+    con = sqlite3.connect("db/atherosclerosis.db")
     cur = con.cursor()
 
     init_db(con, cur)

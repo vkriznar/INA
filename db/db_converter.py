@@ -10,7 +10,7 @@ class DbConverter:
         self.db = DbHandler(database)
         self.filename = database.split("/")[1].split(".")[0]
 
-    def convert_to_pajek(self):
+    def create_graph(self):
         graph = nx.Graph()
         nodes = self.db.get_all_genes()
 
@@ -21,7 +21,15 @@ class DbConverter:
         for interaction in interactions:
             graph.add_edge(interaction.gene1.symbol, interaction.gene2.symbol)
 
+        return graph
+
+    def convert_to_pajek(self):
+        graph = self.create_graph()
         nx.write_pajek(graph, f"analysis/data/{self.filename}/{self.filename}.net")
+
+    def convert_to_gml(self):
+        graph = self.create_graph()
+        nx.write_gml(graph, f"analysis/data/{self.filename}/{self.filename}.gml")
 
     def convert_bipartite_to_gml(self):
         graph = nx.Graph()
