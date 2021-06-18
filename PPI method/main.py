@@ -1,12 +1,12 @@
 from analysis.analysis import NetworkAnalyzer
 from db.db_converter import DbConverter
 from db.db_handler import DbHandler
-from scripts.pancreatic_cancer import insert_db_data, insert_ppi_to_db, map_genes_to_drugs
+from scripts.scripts import insert_db_data, insert_ppi_to_db, map_genes_to_drugs
 import networkx as nx
 
 
 if __name__ == "__main__":
-    db_handler = DbHandler("db/pancreatic-cancer.db")
+    db_handler = DbHandler("db/prostate-cancer.db")
     drug_degree_pairs = db_handler.get_drug_degrees()
     print(sorted(drug_degree_pairs, key=lambda x: x[1], reverse=True)[:10])
 
